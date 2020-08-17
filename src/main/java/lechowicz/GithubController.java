@@ -1,6 +1,5 @@
 package lechowicz;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.path.json.JsonPath;
@@ -11,8 +10,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Controller
 public class GithubController {
@@ -54,7 +56,9 @@ public class GithubController {
         String description = JsonPath.from(resultFromGithub).get("description");
         String url = JsonPath.from(resultFromGithub).get("clone_url");
         int followers = JsonPath.from(resultFromGithub).getInt("stargazers_count");
-        String date = JsonPath.from(resultFromGithub).get("created_at");
+        String dateAsString = JsonPath.from(resultFromGithub).get("created_at");
+
+        Date date = Date.from(Instant.parse(dateAsString));
 
         return new RepoModel(name, description, url, followers, date);
     }

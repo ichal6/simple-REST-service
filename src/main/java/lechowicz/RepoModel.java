@@ -1,16 +1,19 @@
 package lechowicz;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
+
+import java.util.Date;
 
 public class RepoModel {
     String name;
     String description;
     String url;
     int followers;
-    String date;
+    @JsonFormat(pattern="yyyy-MM-dd")
+    Date date;
 
-    public RepoModel(String name, String description, String url, int followers, String date) {
+    public RepoModel(String name, String description, String url, int followers, Date date) {
         this.name = name;
         this.description = description;
         this.url = url;
@@ -39,7 +42,7 @@ public class RepoModel {
     }
 
     @JsonGetter("createdAt")
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 }
