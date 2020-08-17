@@ -4,6 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.path.json.JsonPath;
 import lechowicz.model.RepoModel;
+import org.mockito.Mockito;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,12 +22,12 @@ import java.util.Date;
 public class GithubController {
     @GetMapping(value = "/repositories/{owner}/{repository-name}", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String getDetails(@PathVariable String owner, @PathVariable("repository-name") String repoName) {
+    public ResponseEntity<String> getDetails(@PathVariable String owner, @PathVariable("repository-name") String repoName) {
         String result = null;
         try {
             result = getResult(owner, repoName);
         } catch (HttpClientErrorException ex) {
-            return "Something went wrong";
+            return new ResponseEntity<>("Repository doesn't exist", new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
 
         RepoModel repoModel = getRepo(result);
@@ -34,9 +38,10 @@ public class GithubController {
             repository = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(repoModel);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+            return new ResponseEntity<>("Something went wrong with server side.", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         System.out.println(repository);
-        return repository;
+        return new ResponseEntity<>(repository, new HttpHeaders(), HttpStatus.OK);
     }
 
     private String getResult(String owner, String repoName){
