@@ -1,4 +1,4 @@
-package lechowicz;
+package lechowicz.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
